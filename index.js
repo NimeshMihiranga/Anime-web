@@ -8,7 +8,7 @@ require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://mongo:hcPPhOxOUPRJseJlFOGJSHgGcAHpmCxj@gondola.proxy.rlwy.net:27241';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://mongo:hcPPhOxOUPRJseJlFOGJSHgGcAHpmCxj@gondola.proxy.rlwy.net:27241/black_anime';
 
 // ─── ADMIN CREDENTIALS ────────────────────────────────────────
 const ADMIN_PHONE     = '94721584279';
