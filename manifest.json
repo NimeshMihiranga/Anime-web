@@ -1,0 +1,22 @@
+{
+  "name": "Black Anime",
+  "short_name": "BlackAnime",
+  "description": "Stream and download free anime online",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0608",
+  "theme_color": "#39ff14",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://files.catbox.moe/uam4q9.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "https://files.catbox.moe/uam4q9.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}
