@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>BLACK ANIME — Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0608;--bg2:#120a0f;--bg3:#180d13;
+  --card:#1c1016;--card2:#211319;
+  --border:#2a1520;--border2:#3a1e2c;
+  --a1:#39ff14;--a2:#1fdf00;--a3:#80ff57;
+  --green:#34d399;--red:#f43f5e;--yellow:#f59e0b;
+  --text:#fff0f4;--text2:#c9a0b0;--muted:#7a5060;
+  --grad:linear-gradient(135deg,#39ff14,#1fdf00);
+  --sidebar:220px;
+}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;display:flex;overflow-x:hidden;font-size:13px;}
+a{text-decoration:none;color:inherit}
+button{cursor:pointer;font-family:inherit}
+input,textarea,select{font-family:inherit}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  width:var(--sidebar);min-height:100vh;
+  background:var(--bg2);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:100;
+}
+.sb-logo{
+  display:flex;align-items:center;gap:10px;
+  padding:20px 18px;border-bottom:1px solid var(--border);
+}
+.sb-logo-img{width:32px;height:32px;border-radius:8px;object-fit:cover}
+.sb-logo-name{font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:800}
+.sb-logo-name b{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sb-badge{font-size:0.58rem;background:rgba(57,255,20,0.15);border:1px solid rgba(57,255,20,0.3);color:var(--a1);padding:2px 7px;border-radius:4px;font-weight:700;letter-spacing:1px;margin-left:auto}
+.sb-nav{flex:1;padding:12px 10px;display:flex;flex-direction:column;gap:2px;}
+.sb-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 12px;border-radius:8px;
+  font-size:0.82rem;font-weight:500;color:var(--text2);
+  transition:all 0.18s;cursor:pointer;border:none;background:transparent;width:100%;text-align:left;
+}
+.sb-item svg{width:16px;height:16px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:1.8}
+.sb-item:hover{background:rgba(255,240,244,0.06);color:var(--text)}
+.sb-item.on{background:rgba(57,255,20,0.12);color:var(--a1);}
+.sb-item.on svg{stroke:var(--a1)}
+.sb-sep{height:1px;background:var(--border);margin:8px 0}
+.sb-foot{padding:14px 18px;border-top:1px solid var(--border);}
+.sb-admin-info{font-size:0.72rem;color:var(--muted);}
+.sb-admin-info b{color:var(--text2);display:block;font-size:0.8rem;margin-bottom:2px;}
+
+/* ── MAIN ── */
+.main{margin-left:var(--sidebar);flex:1;min-height:100vh;display:flex;flex-direction:column;}
+.topbar{
+  position:sticky;top:0;z-index:50;
+  height:56px;background:rgba(10,6,8,0.95);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;
+}
+.topbar-title{font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:800;color:var(--text)}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.btn-sm{padding:6px 14px;border-radius:7px;font-size:0.76rem;font-weight:600;border:none;transition:all 0.2s;cursor:pointer;}
+.btn-primary{background:var(--grad);color:#0a0608;box-shadow:0 2px 10px rgba(57,255,20,0.25)}
+.btn-primary:hover{opacity:0.88;transform:translateY(-1px)}
+.btn-ghost{background:transparent;border:1px solid var(--border2);color:var(--text2)}
+.btn-ghost:hover{border-color:var(--a1);color:var(--a1)}
+.btn-danger{background:rgba(244,63,94,0.12);border:1px solid rgba(244,63,94,0.3);color:var(--red)}
+.btn-danger:hover{background:rgba(244,63,94,0.2)}
+.content{padding:24px;flex:1;}
+
+/* ── SECTION ── */
+.section{display:none;}
+.section.on{display:block;}
+
+/* ── STATS CARDS ── */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:24px;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;position:relative;overflow:hidden;}
+.stat-card::before{content:'';position:absolute;inset:0;background:var(--grad);opacity:0.03;}
+.stat-icon{width:36px;height:36px;border-radius:9px;background:rgba(57,255,20,0.12);display:flex;align-items:center;justify-content:center;margin-bottom:12px;}
+.stat-icon svg{width:18px;height:18px;fill:none;stroke:var(--a1);stroke-width:1.8}
+.stat-val{font-size:1.8rem;font-weight:800;line-height:1;margin-bottom:4px;}
+.stat-label{font-size:0.72rem;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:0.5px;}
+
+/* ── TABLE ── */
+.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.table-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border);}
+.table-title{font-size:0.82rem;font-weight:700;color:var(--text)}
+.table-actions{display:flex;gap:8px;align-items:center;}
+.search-mini{background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:6px 12px;border-radius:7px;font-size:0.76rem;outline:none;width:200px;transition:all 0.2s;}
+.search-mini:focus{border-color:var(--a1);}
+.search-mini::placeholder{color:var(--muted)}
+table{width:100%;border-collapse:collapse;}
+th{text-align:left;padding:10px 18px;font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);border-bottom:1px solid var(--border);white-space:nowrap;}
+td{padding:11px 18px;font-size:0.8rem;border-bottom:1px solid rgba(42,21,32,0.5);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(255,240,244,0.02);}
+.td-poster{width:36px;height:52px;object-fit:cover;border-radius:5px;border:1px solid var(--border);}
+.td-poster-ph{width:36px;height:52px;background:var(--bg3);border-radius:5px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;}
+.td-poster-ph svg{width:14px;height:14px;fill:var(--muted)}
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:0.65rem;font-weight:600;}
+.tag-series{background:rgba(99,102,241,0.12);color:#a5b4fc;border:1px solid rgba(99,102,241,0.2)}
+.tag-movie{background:rgba(57,255,20,0.1);color:var(--a1);border:1px solid rgba(57,255,20,0.2)}
+.tag-active{background:rgba(52,211,153,0.1);color:var(--green);border:1px solid rgba(52,211,153,0.2)}
+.tag-inactive{background:rgba(122,80,96,0.1);color:var(--muted);border:1px solid var(--border)}
+.row-actions{display:flex;gap:6px;}
+.icon-btn{width:30px;height:30px;border-radius:6px;border:1px solid var(--border);background:transparent;display:flex;align-items:center;justify-content:center;transition:all 0.18s;color:var(--text2);}
+.icon-btn svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.8}
+.icon-btn:hover{border-color:var(--a1);color:var(--a1)}
+.icon-btn.del:hover{border-color:var(--red);color:var(--red)}
+.empty-row td{text-align:center;padding:40px;color:var(--muted);}
+
+/* ── MODAL ── */
+.modal-overlay{
+  position:fixed;inset:0;z-index:500;
+  background:rgba(5,3,7,0.88);backdrop-filter:blur(12px);
+  display:flex;align-items:center;justify-content:center;padding:16px;
+  opacity:0;pointer-events:none;transition:opacity 0.22s;
+}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal-box{
+  background:var(--card2);border:1px solid var(--border2);
+  border-radius:16px;width:100%;max-width:520px;
+  max-height:92vh;overflow-y:auto;
+  box-shadow:0 40px 100px rgba(0,0,0,0.7);
+  animation:mIn 0.25s cubic-bezier(0.34,1.4,0.64,1);
+}
+.modal-box.wide{max-width:700px;}
+@keyframes mIn{from{transform:scale(0.95) translateY(8px);opacity:0}to{transform:none;opacity:1}}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--border);}
+.modal-head h2{font-size:0.9rem;font-weight:700;}
+.modal-close{background:transparent;border:none;color:var(--muted);font-size:1.1rem;width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;transition:all 0.18s;}
+.modal-close:hover{background:rgba(255,240,244,0.08);color:var(--text)}
+.modal-body{padding:20px;}
+.modal-foot{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;}
+
+/* ── FORM ── */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.form-grid.single{grid-template-columns:1fr;}
+.form-group{display:flex;flex-direction:column;gap:5px;}
+.form-group.span2{grid-column:1/-1;}
+label{font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted)}
+.inp{background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:9px 12px;border-radius:8px;font-size:0.82rem;outline:none;transition:all 0.2s;width:100%;}
+.inp:focus{border-color:var(--a1);box-shadow:0 0 0 3px rgba(57,255,20,0.08)}
+.inp::placeholder{color:var(--muted)}
+textarea.inp{resize:vertical;min-height:70px;}
+select.inp{cursor:pointer;}
+.inp-hint{font-size:0.68rem;color:var(--muted);margin-top:2px;}
+.form-err{font-size:0.72rem;color:var(--red);font-weight:500;display:none;padding:8px 12px;background:rgba(244,63,94,0.08);border-radius:6px;border:1px solid rgba(244,63,94,0.2);}
+
+/* ── EP LIST in modal ── */
+.ep-list{display:flex;flex-direction:column;gap:6px;max-height:280px;overflow-y:auto;margin-top:8px;}
+.ep-list::-webkit-scrollbar{width:3px}
+.ep-list::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+.ep-item{display:flex;align-items:center;gap:10px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px 12px;}
+.ep-num{min-width:32px;height:28px;border-radius:5px;background:rgba(57,255,20,0.1);border:1px solid rgba(57,255,20,0.2);display:flex;align-items:center;justify-content:center;font-size:0.68rem;font-weight:700;color:var(--a1);flex-shrink:0}
+.ep-info{flex:1;min-width:0;}
+.ep-title{font-size:0.78rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ep-url{font-size:0.65rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ep-actions{display:flex;gap:4px;flex-shrink:0}
+
+/* ── TOAST ── */
+.toast-wrap{position:fixed;top:14px;right:14px;z-index:9999;display:flex;flex-direction:column;gap:6px;}
+.toast{background:var(--card2);border:1px solid var(--border2);border-radius:9px;padding:9px 14px;font-size:0.78rem;font-weight:500;min-width:200px;display:flex;align-items:center;gap:8px;box-shadow:0 8px 28px rgba(0,0,0,0.5);animation:tin 0.3s cubic-bezier(0.34,1.56,0.64,1);}
+.toast.ok{border-color:rgba(52,211,153,0.3)}
+.toast.err{border-color:rgba(244,63,94,0.3)}
+.t-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.toast.ok .t-dot{background:var(--green)}
+.toast.err .t-dot{background:var(--red)}
+@keyframes tin{from{transform:translateX(110%);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* ── LOADING ── */
+.spin{display:inline-block;width:14px;height:14px;border:2px solid var(--border2);border-top-color:var(--a1);border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle;margin-right:6px;}
+@keyframes sp{to{transform:rotate(360deg)}}
+.loading-row td{text-align:center;padding:32px;color:var(--muted);}
+
+/* ── CONFIRM ── */
+.confirm-box{max-width:380px;}
+.confirm-msg{font-size:0.85rem;color:var(--text2);line-height:1.6;margin-bottom:4px;}
+.confirm-sub{font-size:0.76rem;color:var(--muted);}
+
+/* ── MOBILE ── */
+@media(max-width:768px){
+  :root{--sidebar:0px}
+  .sidebar{transform:translateX(-100%);transition:transform 0.3s;}
+  .sidebar.open{transform:none;width:220px;}
+  .main{margin-left:0}
+  .mob-menu{display:flex!important}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .form-grid{grid-template-columns:1fr}
+  .form-grid .form-group.span2{grid-column:1}
+  table{font-size:0.74rem}
+  th,td{padding:9px 12px}
+}
+.mob-menu{display:none;background:transparent;border:none;color:var(--text);padding:4px;}
+.mob-menu svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2}
+.mob-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99;}
+.mob-overlay.open{display:block}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen" style="position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:16px;">
+  <div style="background:var(--card2);border:1px solid var(--border2);border-radius:18px;width:100%;max-width:360px;padding:32px;box-shadow:0 40px 100px rgba(0,0,0,0.7);">
+    <div style="text-align:center;margin-bottom:28px;">
+      <img src="https://files.catbox.moe/uam4q9.jpg" style="width:48px;height:48px;border-radius:12px;object-fit:cover;margin-bottom:12px;">
+      <div style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;margin-bottom:4px;"><b style="background:linear-gradient(135deg,#39ff14,#1fdf00);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">BLACK</b>ANIME</div>
+      <div style="font-size:0.75rem;color:var(--muted);">Admin Panel — Sign In</div>
+    </div>
+    <div id="loginErr" style="display:none;background:rgba(244,63,94,0.08);border:1px solid rgba(244,63,94,0.2);border-radius:8px;padding:8px 12px;font-size:0.76rem;color:var(--red);margin-bottom:14px;"></div>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div style="display:flex;flex-direction:column;gap:5px;">
+        <label style="font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);">Phone Number</label>
+        <input id="loginPhone" type="tel" placeholder="94XXXXXXXXX" class="inp" style="letter-spacing:1px;">
+      </div>
+      <div style="display:flex;flex-direction:column;gap:5px;">
+        <label style="font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);">Password</label>
+        <input id="loginPass" type="password" placeholder="••••••••••" class="inp" onkeydown="if(event.key==='Enter')doAdminLogin()">
+      </div>
+      <button onclick="doAdminLogin()" id="loginBtn" style="width:100%;padding:11px;background:linear-gradient(135deg,#39ff14,#1fdf00);border:none;color:#fff;border-radius:9px;font-size:0.88rem;font-weight:600;cursor:pointer;margin-top:4px;transition:all 0.2s;">Sign In</button>
+    </div>
+  </div>
+</div>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sb-logo">
+    <img src="https://files.catbox.moe/uam4q9.jpg" class="sb-logo-img" alt="">
+    <div class="sb-logo-name"><b>BLACK</b>ANIME</div>
+    <span class="sb-badge">ADMIN</span>
+  </div>
+  <nav class="sb-nav">
+    <button class="sb-item on" onclick="showSection('dashboard',this)">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Dashboard
+    </button>
+    <button class="sb-item" onclick="showSection('anime',this)">
+      <svg viewBox="0 0 24 24"><path d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.899L15 14M3 8a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/></svg>
+      Anime
+    </button>
+    <button class="sb-item" onclick="showSection('banners',this)">
+      <svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+      Banners
+    </button>
+    <button class="sb-item" onclick="showSection('comments',this)">
+      <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      Comments
+    </button>
+    <div class="sb-sep"></div>
+    <button class="sb-item" onclick="window.open('/', '_blank')">
+      <svg viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      View Site
+    </button>
+  </nav>
+  <div class="sb-foot">
+    <div class="sb-admin-info">
+      <b>Admin Panel</b>
+      Black Cat OFC
+    </div>
+    <button class="sb-item" onclick="doAdminLogout()" style="margin-top:8px;color:var(--red);"><svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> Sign Out</button>
+  </div>
+</aside>
+<div class="mob-overlay" id="mobOverlay" onclick="closeMob()"></div>
+
+<!-- MAIN -->
+<div class="main">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <button class="mob-menu" onclick="openMob()"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+      <span class="topbar-title" id="topbarTitle">Dashboard</span>
+    </div>
+    <div class="topbar-right">
+      <button class="btn-sm btn-ghost" onclick="openNotifyModal()" id="notifyBtn" style="display:none">🔔 Notify Users</button>
+      <button class="btn-sm btn-primary" id="topAddBtn" onclick="openAddModal()" style="display:none">+ Add Anime</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ══ DASHBOARD ══ -->
+    <div class="section on" id="sec-dashboard">
+      <div class="stats-grid" id="statsGrid">
+        <div class="stat-card">
+          <div class="stat-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
+          <div class="stat-val" id="statUsers">—</div>
+          <div class="stat-label">Total Users</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><svg viewBox="0 0 24 24"><path d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.899L15 14M3 8a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/></svg></div>
+          <div class="stat-val" id="statAnime">—</div>
+          <div class="stat-label">Anime Titles</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></div>
+          <div class="stat-val" id="statEps">—</div>
+          <div class="stat-label">Episodes</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
+          <div class="stat-val" id="statComments">—</div>
+          <div class="stat-label">Comments</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
+          <div class="stat-val" id="statViews">—</div>
+          <div class="stat-label">Total Views</div>
+        </div>
+      </div>
+
+      <!-- Top Views -->
+      <div class="table-wrap" style="margin-bottom:16px;">
+        <div class="table-head">
+          <span class="table-title">Top Viewed Anime</span>
+        </div>
+        <table>
+          <thead><tr><th>Anime</th><th>Views</th></tr></thead>
+          <tbody id="topViewsBody"><tr class="loading-row"><td colspan="2"><span class="spin"></span>Loading...</td></tr></tbody>
+        </table>
+      </div>
+
+      <!-- Recent anime -->
+      <div class="table-wrap">
+        <div class="table-head">
+          <span class="table-title">Recent Anime</span>
+          <button class="btn-sm btn-ghost" onclick="showSection('anime', document.querySelector('.sb-item:nth-child(2)'))">View All →</button>
+        </div>
+        <table>
+          <thead><tr><th>Poster</th><th>Name</th><th>Type</th><th>Episodes</th><th>Actions</th></tr></thead>
+          <tbody id="recentAnimeBody"><tr class="loading-row"><td colspan="5"><span class="spin"></span>Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ ANIME ══ -->
+    <div class="section" id="sec-anime">
+      <div class="table-wrap">
+        <div class="table-head">
+          <span class="table-title">All Anime <span id="animeTableCount" style="color:var(--muted);font-weight:400;margin-left:4px;"></span></span>
+          <div class="table-actions">
+            <input type="text" class="search-mini" placeholder="Search anime..." oninput="filterAnimeTable(this.value)" id="animeSearch">
+            <button class="btn-sm btn-primary" onclick="openAddModal()">+ Add Anime</button>
+          </div>
+        </div>
+        <table>
+          <thead><tr><th>Poster</th><th>Name</th><th>Genre</th><th>Type</th><th>EPs</th><th>Actions</th></tr></thead>
+          <tbody id="animeTableBody"><tr class="loading-row"><td colspan="6"><span class="spin"></span>Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ BANNERS ══ -->
+    <div class="section" id="sec-banners">
+      <div class="table-wrap">
+        <div class="table-head">
+          <span class="table-title">Hero Banners</span>
+          <button class="btn-sm btn-primary" onclick="openBannerModal()">+ Add Banner</button>
+        </div>
+        <table>
+          <thead><tr><th>Title</th><th>Label</th><th>Order</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="bannerTableBody"><tr class="loading-row"><td colspan="5"><span class="spin"></span>Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ COMMENTS ══ -->
+    <div class="section" id="sec-comments">
+      <div class="table-wrap">
+        <div class="table-head">
+          <span class="table-title">All Comments</span>
+          <input type="text" class="search-mini" placeholder="Search comments..." oninput="filterComments(this.value)">
+        </div>
+        <table>
+          <thead><tr><th>User</th><th>Anime</th><th>Comment</th><th>Date</th><th>Actions</th></tr></thead>
+          <tbody id="commentsTableBody"><tr class="loading-row"><td colspan="5"><span class="spin"></span>Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-wrap" id="toastWrap"></div>
+
+<!-- ══ ANIME MODAL ══ -->
+<div class="modal-overlay" id="animeModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2 id="animeModalTitle">Add Anime</h2>
+      <button class="modal-close" onclick="closeAnimeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-err" id="animeErr"></div>
+      <div class="form-grid">
+        <div class="form-group span2">
+          <label>Anime Name *</label>
+          <input class="inp" id="aName" placeholder="e.g. Demon Slayer">
+        </div>
+        <div class="form-group span2">
+          <label>Description</label>
+          <textarea class="inp" id="aDesc" placeholder="Short description..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Genre</label>
+          <input class="inp" id="aGenre" placeholder="e.g. Action, Fantasy">
+        </div>
+        <div class="form-group">
+          <label>Type</label>
+          <select class="inp" id="aType">
+            <option value="series">Series</option>
+            <option value="movie">Movie</option>
+          </select>
+        </div>
+        <div class="form-group span2">
+          <label>Logo / Poster URL</label>
+          <input class="inp" id="aLogo" placeholder="https://...">
+          <span class="inp-hint">Poster image URL (portrait ratio recommended)</span>
+        </div>
+        <div class="form-group span2">
+          <label>Watch / Drive URL</label>
+          <input class="inp" id="aDownload" placeholder="Google Drive or direct URL">
+          <span class="inp-hint">Google Drive share link or direct video URL</span>
+        </div>
+        <div class="form-group span2">
+          <label>Trailer URL</label>
+          <input class="inp" id="aTrailer" placeholder="YouTube or Drive URL">
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-sm btn-ghost" onclick="closeAnimeModal()">Cancel</button>
+      <button class="btn-sm btn-primary" id="animeSaveBtn" onclick="saveAnime()">Save Anime</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ EPISODES MODAL ══ -->
+<div class="modal-overlay" id="epModal">
+  <div class="modal-box wide">
+    <div class="modal-head">
+      <h2 id="epModalTitle">Manage Episodes</h2>
+      <button class="modal-close" onclick="closeEpModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <!-- Add ep form -->
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:14px;">
+        <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);margin-bottom:10px;">Add New Episode</div>
+        <div class="form-err" id="epErr"></div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Episode Number *</label>
+            <input class="inp" id="epNum" type="number" min="1" placeholder="1">
+          </div>
+          <div class="form-group">
+            <label>Title</label>
+            <input class="inp" id="epTitle" placeholder="Episode title (optional)">
+          </div>
+          <div class="form-group span2">
+            <label>Drive / Video URL *</label>
+            <input class="inp" id="epUrl" placeholder="Google Drive or video URL">
+          </div>
+          <div class="form-group">
+            <label>Duration</label>
+            <input class="inp" id="epDur" placeholder="e.g. 24:00">
+          </div>
+          <div class="form-group">
+            <label>Thumbnail URL</label>
+            <input class="inp" id="epThumb" placeholder="https://...">
+          </div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;margin-top:10px;">
+          <button class="btn-sm btn-primary" onclick="addEpisode()">+ Add Episode</button>
+        </div>
+      </div>
+      <!-- Ep list -->
+      <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);margin-bottom:8px;">Episodes <span id="epCount" style="color:var(--a1);"></span></div>
+      <div class="ep-list" id="epListBody"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-sm btn-ghost" onclick="closeEpModal()">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ BANNER MODAL ══ -->
+<div class="modal-overlay" id="bannerModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2 id="bannerModalTitle">Add Banner</h2>
+      <button class="modal-close" onclick="closeBannerModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-err" id="bannerErr"></div>
+      <div class="form-grid">
+        <div class="form-group span2">
+          <label>Title *</label>
+          <input class="inp" id="bTitle" placeholder="Banner title">
+        </div>
+        <div class="form-group span2">
+          <label>Description</label>
+          <textarea class="inp" id="bDesc" placeholder="Short description..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Label</label>
+          <input class="inp" id="bLabel" placeholder="Now Streaming">
+        </div>
+        <div class="form-group">
+          <label>Order</label>
+          <input class="inp" id="bOrder" type="number" value="0" min="0">
+        </div>
+        <div class="form-group span2">
+          <label>Background Image URL</label>
+          <input class="inp" id="bImage" placeholder="https://... (wide image)">
+        </div>
+        <div class="form-group span2">
+          <label>Anime ID (link to anime)</label>
+          <input class="inp" id="bAnimeId" placeholder="MongoDB _id of anime">
+          <span class="inp-hint">Clicking banner will open this anime</span>
+        </div>
+        <div class="form-group span2">
+          <label>Play URL (optional)</label>
+          <input class="inp" id="bPlayUrl" placeholder="Direct play URL">
+        </div>
+        <div class="form-group span2">
+          <label>Status</label>
+          <select class="inp" id="bActive">
+            <option value="true">Active</option>
+            <option value="false">Inactive</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-sm btn-ghost" onclick="closeBannerModal()">Cancel</button>
+      <button class="btn-sm btn-primary" id="bannerSaveBtn" onclick="saveBanner()">Save Banner</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══ NOTIFY MODAL ══ -->
+<div class="modal-overlay" id="notifyModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2>Send Notification to All Users</h2>
+      <button class="modal-close" onclick="closeNotifyModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-err" id="notifyErr"></div>
+      <div class="form-grid single">
+        <div class="form-group">
+          <label>Message *</label>
+          <textarea class="inp" id="notifyMsg" placeholder="e.g. New episode of Demon Slayer is now available!" style="min-height:80px;"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Link to Anime (optional)</label>
+          <select class="inp" id="notifyAnime">
+            <option value="">— No anime link —</option>
+          </select>
+          <span class="inp-hint">Users can tap notification to open this anime</span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-sm btn-ghost" onclick="closeNotifyModal()">Cancel</button>
+      <button class="btn-sm btn-primary" id="notifySendBtn" onclick="sendNotification()">Send to All Users</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CONFIRM MODAL ══ -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal-box confirm-box">
+    <div class="modal-head">
+      <h2 id="confirmTitle">Confirm Delete</h2>
+      <button class="modal-close" onclick="closeConfirm()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="confirm-msg" id="confirmMsg"></div>
+      <div class="confirm-sub" id="confirmSub"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-sm btn-ghost" onclick="closeConfirm()">Cancel</button>
+      <button class="btn-sm btn-danger" id="confirmOkBtn">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let ADMIN_TOKEN = localStorage.getItem('ba_admin_token') || '';
+const ADM = () => ({ 'x-admin-token': ADMIN_TOKEN, 'Content-Type': 'application/json' });
+
+async function doAdminLogin() {
+  const phone = document.getElementById('loginPhone').value.trim();
+  const pass  = document.getElementById('loginPass').value;
+  const err   = document.getElementById('loginErr');
+  const btn   = document.getElementById('loginBtn');
+  if (!phone || !pass) { err.textContent = 'Please enter phone and password'; err.style.display = 'block'; return; }
+  btn.textContent = 'Signing in...'; btn.disabled = true;
+  try {
+    const r = await fetch('/api/admin/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone, password: pass })
+    });
+    const d = await r.json();
+    if (d.success) {
+      ADMIN_TOKEN = d.token;
+      localStorage.setItem('ba_admin_token', ADMIN_TOKEN);
+      document.getElementById('loginScreen').style.display = 'none';
+      loadStats();
+      loadAnimeData();
+    } else {
+      err.textContent = d.message || 'Invalid credentials';
+      err.style.display = 'block';
+    }
+  } catch(e) { err.textContent = 'Cannot connect to server'; err.style.display = 'block'; }
+  btn.textContent = 'Sign In'; btn.disabled = false;
+}
+
+async function doAdminLogout() {
+  try { await fetch('/api/admin/logout', { method: 'POST', headers: { 'x-admin-token': ADMIN_TOKEN } }); } catch(e) {}
+  ADMIN_TOKEN = '';
+  localStorage.removeItem('ba_admin_token');
+  location.reload();
+}
+
+async function checkAdminAuth() {
+  if (!ADMIN_TOKEN) { document.getElementById('loginScreen').style.display = 'flex'; return; }
+  try {
+    const r = await fetch('/api/admin/verify', { headers: { 'x-admin-token': ADMIN_TOKEN } });
+    const d = await r.json();
+    if (d.success) {
+      document.getElementById('loginScreen').style.display = 'none';
+    } else {
+      ADMIN_TOKEN = ''; localStorage.removeItem('ba_admin_token');
+      document.getElementById('loginScreen').style.display = 'flex';
+    }
+  } catch(e) { document.getElementById('loginScreen').style.display = 'flex'; }
+}
+let allAnimeData = [], allBannersData = [], allCommentsData = [];
+let editAnimeId = null, editBannerId = null, curEpAnimeId = null;
+let _confirmCb = null;
+
+// ── INIT ──────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  checkAdminAuth();
+});
+
+// ── SIDEBAR ──────────────────────────────────────────────────
+function showSection(name, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('on'));
+  document.querySelectorAll('.sb-item').forEach(b => b.classList.remove('on'));
+  document.getElementById('sec-' + name).classList.add('on');
+  if (btn) btn.classList.add('on');
+
+  const titles = {dashboard:'Dashboard', anime:'Anime', banners:'Banners', comments:'Comments'};
+  document.getElementById('topbarTitle').textContent = titles[name] || name;
+  document.getElementById('topAddBtn').style.display = name === 'anime' ? 'inline-flex' : 'none';
+  document.getElementById('notifyBtn').style.display = 'inline-flex';
+
+  if (name === 'anime')    loadAnimeTable();
+  if (name === 'banners')  loadBannersTable();
+  if (name === 'comments') loadCommentsTable();
+  closeMob();
+}
+
+function openMob()  { document.getElementById('sidebar').classList.add('open'); document.getElementById('mobOverlay').classList.add('open'); }
+function closeMob() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('mobOverlay').classList.remove('open'); }
+
+// ── TOAST ─────────────────────────────────────────────────────
+function toast(msg, type='ok') {
+  const c = document.getElementById('toastWrap');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.innerHTML = `<div class="t-dot"></div><span>${msg}</span>`;
+  c.appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+}
+
+// ── CONFIRM ───────────────────────────────────────────────────
+function confirm2(title, msg, sub, cb) {
+  document.getElementById('confirmTitle').textContent = title;
+  document.getElementById('confirmMsg').textContent = msg;
+  document.getElementById('confirmSub').textContent = sub || '';
+  _confirmCb = cb;
+  document.getElementById('confirmOkBtn').onclick = () => { closeConfirm(); cb(); };
+  document.getElementById('confirmModal').classList.add('open');
+}
+function closeConfirm() { document.getElementById('confirmModal').classList.remove('open'); }
+
+// ── STATS ─────────────────────────────────────────────────────
+async function loadStats() {
+  try {
+    const r = await fetch('/api/admin/stats', { headers: ADM()() });
+    const d = await r.json();
+    if (d.success) {
+      document.getElementById('statUsers').textContent  = d.userCount;
+      document.getElementById('statAnime').textContent  = d.animeCount;
+      document.getElementById('statEps').textContent    = d.epCount;
+    }
+  } catch(e) {}
+  // comment count
+  try {
+    const r = await fetch('/api/anime', { headers: ADM()() });
+    const d = await r.json();
+    if (d.success) allAnimeData = d.anime || [];
+    loadRecentTable();
+  } catch(e) {}
+}
+
+// ── RECENT TABLE (dashboard) ──────────────────────────────────
+function loadRecentTable() {
+  const tbody = document.getElementById('recentAnimeBody');
+  const recent = [...allAnimeData].slice(0, 8);
+  if (!recent.length) { tbody.innerHTML = '<tr class="empty-row"><td colspan="5">No anime yet</td></tr>'; return; }
+  tbody.innerHTML = recent.map(a => `
+    <tr>
+      <td>${a.logoUrl ? `<img class="td-poster" src="${a.logoUrl}" alt="">` : `<div class="td-poster-ph"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor"/></svg></div>`}</td>
+      <td><b style="font-size:0.82rem;">${esc(a.name)}</b></td>
+      <td><span class="tag tag-${a.type||'series'}">${a.type||'series'}</span></td>
+      <td style="color:var(--a1);font-weight:600;">${(a.episodes||[]).length}</td>
+      <td>
+        <div class="row-actions">
+          <button class="icon-btn" title="Edit" onclick="openEditModal('${a._id}')"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+          <button class="icon-btn" title="Episodes" onclick="openEpModal('${a._id}','${esc(a.name)}')"><svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></button>
+          <button class="icon-btn del" title="Delete" onclick="deleteAnime('${a._id}','${esc(a.name)}')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+// ── ANIME TABLE ───────────────────────────────────────────────
+async function loadAnimeData() {
+  try {
+    const r = await fetch('/api/anime');
+    const d = await r.json();
+    if (d.success) allAnimeData = d.anime || [];
+  } catch(e) {}
+}
+
+async function loadAnimeTable() {
+  await loadAnimeData();
+  renderAnimeTable(allAnimeData);
+}
+
+function renderAnimeTable(list) {
+  document.getElementById('animeTableCount').textContent = `(${list.length})`;
+  const tbody = document.getElementById('animeTableBody');
+  if (!list.length) { tbody.innerHTML = '<tr class="empty-row"><td colspan="6">No anime found</td></tr>'; return; }
+  tbody.innerHTML = list.map(a => `
+    <tr>
+      <td>${a.logoUrl ? `<img class="td-poster" src="${a.logoUrl}" alt="" onerror="this.style.display='none'">` : `<div class="td-poster-ph"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor"/></svg></div>`}</td>
+      <td><b>${esc(a.name)}</b></td>
+      <td style="color:var(--muted);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(a.genre||'—')}</td>
+      <td><span class="tag tag-${a.type||'series'}">${a.type||'series'}</span></td>
+      <td style="color:var(--a1);font-weight:600;">${(a.episodes||[]).length}</td>
+      <td>
+        <div class="row-actions">
+          <button class="icon-btn" title="Edit" onclick="openEditModal('${a._id}')"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+          <button class="icon-btn" title="Manage Episodes" onclick="openEpModal('${a._id}','${esc(a.name).replace(/'/g,"\\'")}')"><svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></button>
+          <button class="icon-btn del" title="Delete" onclick="deleteAnime('${a._id}','${esc(a.name).replace(/'/g,"\\'")}')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+function filterAnimeTable(q) {
+  const f = allAnimeData.filter(a =>
+    a.name.toLowerCase().includes(q.toLowerCase()) ||
+    (a.genre||'').toLowerCase().includes(q.toLowerCase())
+  );
+  renderAnimeTable(f);
+}
+
+// ── ANIME MODAL ───────────────────────────────────────────────
+function openAddModal() {
+  editAnimeId = null;
+  document.getElementById('animeModalTitle').textContent = 'Add Anime';
+  document.getElementById('animeSaveBtn').textContent = 'Save Anime';
+  ['aName','aDesc','aGenre','aLogo','aDownload','aTrailer'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('aType').value = 'series';
+  document.getElementById('animeErr').style.display = 'none';
+  document.getElementById('animeModal').classList.add('open');
+}
+
+function openEditModal(id) {
+  const a = allAnimeData.find(x => x._id === id);
+  if (!a) return;
+  editAnimeId = id;
+  document.getElementById('animeModalTitle').textContent = 'Edit Anime';
+  document.getElementById('animeSaveBtn').textContent = 'Update Anime';
+  document.getElementById('aName').value     = a.name || '';
+  document.getElementById('aDesc').value     = a.description || '';
+  document.getElementById('aGenre').value    = a.genre || '';
+  document.getElementById('aType').value     = a.type || 'series';
+  document.getElementById('aLogo').value     = a.logoUrl || '';
+  document.getElementById('aDownload').value = a.downloadUrl || '';
+  document.getElementById('aTrailer').value  = a.trailerUrl || '';
+  document.getElementById('animeErr').style.display = 'none';
+  document.getElementById('animeModal').classList.add('open');
+}
+
+function closeAnimeModal() { document.getElementById('animeModal').classList.remove('open'); }
+
+async function saveAnime() {
+  const name = document.getElementById('aName').value.trim();
+  const err  = document.getElementById('animeErr');
+  if (!name) { err.textContent = 'Anime name is required'; err.style.display = 'block'; return; }
+  err.style.display = 'none';
+
+  const body = {
+    name,
+    description: document.getElementById('aDesc').value.trim(),
+    genre:       document.getElementById('aGenre').value.trim(),
+    type:        document.getElementById('aType').value,
+    logoUrl:     document.getElementById('aLogo').value.trim(),
+    downloadUrl: document.getElementById('aDownload').value.trim(),
+    trailerUrl:  document.getElementById('aTrailer').value.trim(),
+  };
+
+  const btn = document.getElementById('animeSaveBtn');
+  btn.textContent = 'Saving...'; btn.disabled = true;
+
+  try {
+    const url    = editAnimeId ? `/api/anime/${editAnimeId}` : '/api/anime';
+    const method = editAnimeId ? 'PUT' : 'POST';
+    const r = await fetch(url, { method, headers: ADM()(), body: JSON.stringify(body) });
+    const d = await r.json();
+    if (d.success) {
+      toast(editAnimeId ? 'Anime updated!' : 'Anime added!', 'ok');
+      closeAnimeModal();
+      await loadAnimeData();
+      loadAnimeTable();
+      loadRecentTable();
+    } else {
+      err.textContent = d.message || 'Failed'; err.style.display = 'block';
+    }
+  } catch(e) { err.textContent = 'Server error'; err.style.display = 'block'; }
+  btn.textContent = editAnimeId ? 'Update Anime' : 'Save Anime'; btn.disabled = false;
+}
+
+async function deleteAnime(id, name) {
+  confirm2('Delete Anime', `Delete "${name}"?`, 'This will permanently remove the anime and all its episodes.', async () => {
+    try {
+      const r = await fetch(`/api/anime/${id}`, { method: 'DELETE', headers: ADM() });
+      const d = await r.json();
+      if (d.success) {
+        toast('Anime deleted', 'ok');
+        await loadAnimeData();
+        loadAnimeTable();
+        loadRecentTable();
+      } else toast(d.message || 'Failed', 'err');
+    } catch(e) { toast('Server error', 'err'); }
+  });
+}
+
+// ── EPISODES ─────────────────────────────────────────────────
+async function openEpModal(animeId, animeName) {
+  curEpAnimeId = animeId;
+  document.getElementById('epModalTitle').textContent = `Episodes — ${animeName}`;
+  ['epNum','epTitle','epUrl','epDur','epThumb'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('epErr').style.display = 'none';
+  document.getElementById('epModal').classList.add('open');
+  await loadEpList();
+}
+
+function closeEpModal() { document.getElementById('epModal').classList.remove('open'); curEpAnimeId = null; }
+
+async function loadEpList() {
+  const body = document.getElementById('epListBody');
+  body.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);"><span class="spin"></span>Loading...</div>';
+  try {
+    const r = await fetch(`/api/anime/${curEpAnimeId}/episodes`);
+    const d = await r.json();
+    const eps = d.episodes || [];
+    document.getElementById('epCount').textContent = `(${eps.length})`;
+    if (!eps.length) { body.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);">No episodes yet</div>'; return; }
+    body.innerHTML = eps.map(ep => `
+      <div class="ep-item" id="epi-${ep._id}">
+        <div class="ep-num">EP${ep.number}</div>
+        <div class="ep-info">
+          <div class="ep-title">${esc(ep.title || 'Episode ' + ep.number)}</div>
+          <div class="ep-url">${esc(ep.driveUrl || '')}</div>
+        </div>
+        <div class="ep-actions">
+          <button class="icon-btn del" title="Delete" onclick="deleteEp('${ep._id}',${ep.number})"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>
+        </div>
+      </div>`).join('');
+    // Also update main anime data
+    const anime = allAnimeData.find(a => a._id === curEpAnimeId);
+    if (anime) anime.episodes = eps;
+  } catch(e) { body.innerHTML = '<div style="text-align:center;padding:20px;color:var(--red);">Failed to load</div>'; }
+}
+
+async function addEpisode() {
+  const num = document.getElementById('epNum').value;
+  const url = document.getElementById('epUrl').value.trim();
+  const err = document.getElementById('epErr');
+  if (!num || !url) { err.textContent = 'Episode number and URL are required'; err.style.display = 'block'; return; }
+  err.style.display = 'none';
+  const body = {
+    number:   parseInt(num),
+    title:    document.getElementById('epTitle').value.trim(),
+    driveUrl: url,
+    duration: document.getElementById('epDur').value.trim(),
+    thumbnail:document.getElementById('epThumb').value.trim(),
+  };
+  try {
+    const r = await fetch(`/api/anime/${curEpAnimeId}/episodes`, { method:'POST', headers: ADM()(), body: JSON.stringify(body) });
+    const d = await r.json();
+    if (d.success) {
+      toast(`Episode ${num} added!`, 'ok');
+      ['epNum','epTitle','epUrl','epDur','epThumb'].forEach(id => document.getElementById(id).value = '');
+      await loadEpList();
+      loadAnimeTable();
+    } else { err.textContent = d.message || 'Failed'; err.style.display = 'block'; }
+  } catch(e) { err.textContent = 'Server error'; err.style.display = 'block'; }
+}
+
+async function deleteEp(epId, epNum) {
+  confirm2('Delete Episode', `Delete Episode ${epNum}?`, '', async () => {
+    try {
+      const r = await fetch(`/api/anime/${curEpAnimeId}/episodes/${epId}`, { method:'DELETE', headers: ADM() });
+      const d = await r.json();
+      if (d.success) { toast('Episode deleted', 'ok'); await loadEpList(); loadAnimeTable(); }
+      else toast(d.message||'Failed','err');
+    } catch(e) { toast('Server error','err'); }
+  });
+}
+
+// ── BANNERS ───────────────────────────────────────────────────
+async function loadBannersTable() {
+  const tbody = document.getElementById('bannerTableBody');
+  tbody.innerHTML = '<tr class="loading-row"><td colspan="5"><span class="spin"></span>Loading...</td></tr>';
+  try {
+    const r = await fetch('/api/admin/banners', { headers: ADM()() });
+    const d = await r.json();
+    allBannersData = d.banners || [];
+    if (!allBannersData.length) { tbody.innerHTML = '<tr class="empty-row"><td colspan="5">No banners yet</td></tr>'; return; }
+    tbody.innerHTML = allBannersData.map(b => `
+      <tr>
+        <td><b>${esc(b.title)}</b></td>
+        <td style="color:var(--muted);">${esc(b.label||'Now Streaming')}</td>
+        <td style="color:var(--a1);font-weight:600;">${b.order||0}</td>
+        <td><span class="tag ${b.active?'tag-active':'tag-inactive'}">${b.active?'Active':'Inactive'}</span></td>
+        <td>
+          <div class="row-actions">
+            <button class="icon-btn" title="Edit" onclick="openEditBanner('${b._id}')"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+            <button class="icon-btn del" title="Delete" onclick="deleteBanner('${b._id}','${esc(b.title)}')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>
+          </div>
+        </td>
+      </tr>`).join('');
+  } catch(e) { tbody.innerHTML = '<tr class="empty-row"><td colspan="5">Failed to load</td></tr>'; }
+}
+
+function openBannerModal() {
+  editBannerId = null;
+  document.getElementById('bannerModalTitle').textContent = 'Add Banner';
+  document.getElementById('bannerSaveBtn').textContent = 'Save Banner';
+  ['bTitle','bDesc','bLabel','bImage','bAnimeId','bPlayUrl'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('bOrder').value = '0';
+  document.getElementById('bActive').value = 'true';
+  document.getElementById('bannerErr').style.display = 'none';
+  document.getElementById('bannerModal').classList.add('open');
+}
+
+function openEditBanner(id) {
+  const b = allBannersData.find(x => x._id === id);
+  if (!b) return;
+  editBannerId = id;
+  document.getElementById('bannerModalTitle').textContent = 'Edit Banner';
+  document.getElementById('bannerSaveBtn').textContent = 'Update Banner';
+  document.getElementById('bTitle').value   = b.title || '';
+  document.getElementById('bDesc').value    = b.description || '';
+  document.getElementById('bLabel').value   = b.label || '';
+  document.getElementById('bOrder').value   = b.order || 0;
+  document.getElementById('bImage').value   = b.imageUrl || '';
+  document.getElementById('bAnimeId').value = b.animeId || '';
+  document.getElementById('bPlayUrl').value = b.playUrl || '';
+  document.getElementById('bActive').value  = b.active ? 'true' : 'false';
+  document.getElementById('bannerErr').style.display = 'none';
+  document.getElementById('bannerModal').classList.add('open');
+}
+
+function closeBannerModal() { document.getElementById('bannerModal').classList.remove('open'); }
+
+async function saveBanner() {
+  const title = document.getElementById('bTitle').value.trim();
+  const err = document.getElementById('bannerErr');
+  if (!title) { err.textContent = 'Title is required'; err.style.display = 'block'; return; }
+  err.style.display = 'none';
+  const body = {
+    title,
+    description: document.getElementById('bDesc').value.trim(),
+    label:    document.getElementById('bLabel').value.trim() || 'Now Streaming',
+    order:    parseInt(document.getElementById('bOrder').value) || 0,
+    imageUrl: document.getElementById('bImage').value.trim(),
+    animeId:  document.getElementById('bAnimeId').value.trim(),
+    playUrl:  document.getElementById('bPlayUrl').value.trim(),
+    active:   document.getElementById('bActive').value === 'true',
+  };
+  const btn = document.getElementById('bannerSaveBtn');
+  btn.textContent = 'Saving...'; btn.disabled = true;
+  try {
+    const url    = editBannerId ? `/api/banners/${editBannerId}` : '/api/banners';
+    const method = editBannerId ? 'PUT' : 'POST';
+    const r = await fetch(url, { method, headers: ADM()(), body: JSON.stringify(body) });
+    const d = await r.json();
+    if (d.success) {
+      toast(editBannerId ? 'Banner updated!' : 'Banner added!', 'ok');
+      closeBannerModal();
+      loadBannersTable();
+    } else { err.textContent = d.message || 'Failed'; err.style.display = 'block'; }
+  } catch(e) { err.textContent = 'Server error'; err.style.display = 'block'; }
+  btn.textContent = editBannerId ? 'Update Banner' : 'Save Banner'; btn.disabled = false;
+}
+
+async function deleteBanner(id, title) {
+  confirm2('Delete Banner', `Delete banner "${title}"?`, '', async () => {
+    try {
+      const r = await fetch(`/api/banners/${id}`, { method:'DELETE', headers: ADM() });
+      const d = await r.json();
+      if (d.success) { toast('Banner deleted','ok'); loadBannersTable(); }
+      else toast(d.message||'Failed','err');
+    } catch(e) { toast('Server error','err'); }
+  });
+}
+
+// ── COMMENTS ─────────────────────────────────────────────────
+async function loadCommentsTable() {
+  const tbody = document.getElementById('commentsTableBody');
+  tbody.innerHTML = '<tr class="loading-row"><td colspan="5"><span class="spin"></span>Loading...</td></tr>';
+  allCommentsData = [];
+
+  // fetch all anime first to get anime names
+  if (!allAnimeData.length) await loadAnimeData();
+
+  // fetch comments for all anime
+  const all = [];
+  await Promise.all(allAnimeData.map(async a => {
+    try {
+      const r = await fetch(`/api/anime/${a._id}/comments`);
+      const d = await r.json();
+      if (d.success) d.comments.forEach(c => all.push({ ...c, animeName: a.name }));
+    } catch(e) {}
+  }));
+
+  allCommentsData = all.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+  document.getElementById('statComments').textContent = allCommentsData.length;
+  renderCommentsTable(allCommentsData);
+}
+
+function renderCommentsTable(list) {
+  const tbody = document.getElementById('commentsTableBody');
+  if (!list.length) { tbody.innerHTML = '<tr class="empty-row"><td colspan="5">No comments</td></tr>'; return; }
+  tbody.innerHTML = list.map(c => `
+    <tr>
+      <td><b style="color:var(--a1);">${esc(c.username)}</b></td>
+      <td style="color:var(--muted);font-size:0.76rem;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(c.animeName||'')}</td>
+      <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${esc(c.text)}">${esc(c.text)}</td>
+      <td style="color:var(--muted);font-size:0.74rem;white-space:nowrap;">${ago(c.createdAt)}</td>
+      <td>
+        <button class="icon-btn del" title="Delete" onclick="deleteComment('${c._id}')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>
+      </td>
+    </tr>`).join('');
+}
+
+function filterComments(q) {
+  const f = allCommentsData.filter(c =>
+    c.username.toLowerCase().includes(q.toLowerCase()) ||
+    c.text.toLowerCase().includes(q.toLowerCase()) ||
+    (c.animeName||'').toLowerCase().includes(q.toLowerCase())
+  );
+  renderCommentsTable(f);
+}
+
+async function deleteComment(id) {
+  confirm2('Delete Comment', 'Delete this comment?', '', async () => {
+    try {
+      const r = await fetch(`/api/comments/${id}`, { method:'DELETE', headers: ADM()(), body: JSON.stringify({userId:''}) });
+      const d = await r.json();
+      if (d.success) { toast('Comment deleted','ok'); allCommentsData = allCommentsData.filter(c => c._id !== id); renderCommentsTable(allCommentsData); }
+      else toast(d.message||'Failed','err');
+    } catch(e) { toast('Server error','err'); }
+  });
+}
+
+// ── HELPERS ───────────────────────────────────────────────────
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function ago(d){
+  const s=Math.floor((Date.now()-new Date(d))/1000);
+  if(s<60) return 'just now';
+  if(s<3600) return Math.floor(s/60)+'m ago';
+  if(s<86400) return Math.floor(s/3600)+'h ago';
+  return Math.floor(s/86400)+'d ago';
+}
+
+
+// ── NOTIFICATIONS ─────────────────────────────────────────────
+function openNotifyModal() {
+  // populate anime dropdown
+  const sel = document.getElementById('notifyAnime');
+  sel.innerHTML = '<option value="">— No anime link —</option>' +
+    allAnimeData.map(a => `<option value="${a._id}">${esc(a.name)}</option>`).join('');
+  document.getElementById('notifyMsg').value = '';
+  document.getElementById('notifyErr').style.display = 'none';
+  document.getElementById('notifyModal').classList.add('open');
+}
+function closeNotifyModal() { document.getElementById('notifyModal').classList.remove('open'); }
+
+async function sendNotification() {
+  const msg = document.getElementById('notifyMsg').value.trim();
+  const animeId = document.getElementById('notifyAnime').value;
+  const err = document.getElementById('notifyErr');
+  if (!msg) { err.textContent = 'Message is required'; err.style.display = 'block'; return; }
+  err.style.display = 'none';
+  const btn = document.getElementById('notifySendBtn');
+  btn.textContent = 'Sending...'; btn.disabled = true;
+  try {
+    const r = await fetch('/api/admin/notify', {
+      method: 'POST', headers: ADM(),
+      body: JSON.stringify({ message: msg, animeId })
+    });
+    const d = await r.json();
+    if (d.success) {
+      toast(`Notification sent to ${d.sent} users!`, 'ok');
+      closeNotifyModal();
+    } else { err.textContent = d.message || 'Failed'; err.style.display = 'block'; }
+  } catch(e) { err.textContent = 'Server error'; err.style.display = 'block'; }
+  btn.textContent = 'Send to All Users'; btn.disabled = false;
+}
+
+// Close modals on overlay click
+['animeModal','epModal','bannerModal','confirmModal','notifyModal'].forEach(id => {
+  document.getElementById(id).addEventListener('click', e => {
+    if (e.target.id === id) {
+      if (id==='animeModal') closeAnimeModal();
+      if (id==='epModal') closeEpModal();
+      if (id==='bannerModal') closeBannerModal();
+      if (id==='confirmModal') closeConfirm();
+      if (id==='notifyModal') closeNotifyModal();
+    }
+  });
+});
+document.addEventListener('keydown', e => {
+  if (e.key==='Escape') { closeAnimeModal(); closeEpModal(); closeBannerModal(); closeConfirm(); closeNotifyModal(); }
+});
+</script>
+</body>
+</html>
